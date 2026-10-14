@@ -1,0 +1,10 @@
+__pycache__/
+*.py[cod]
+.venv/
+.env
+data/*
+!data/.gitkeep
+*.duckdb
+*.duckdb.wal
+.vscode/
+.idea/

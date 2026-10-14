@@ -1,0 +1,29 @@
+x-common: &common
+  build: .
+  image: analyze-shop:latest
+  env_file:
+    - path: .env
+      required: false
+  environment:
+    TZ: Asia/Ho_Chi_Minh
+  volumes:
+    - ./data:/app/data
+    - ./config:/app/config
+
+services:
+  # Chạy 1 lần: docker compose run --rm scraper --list shop_build
+  scraper:
+    <<: *common
+    entrypoint: ["scrape"]
+    command: ["--help"]
+    tty: true
+    stop_signal: SIGINT
+    profiles: ["scraper"]
+
+  # Web app: docker compose up -d analyzer → http://localhost:8765
+  analyzer:
+    <<: *common
+    command: ["analyzer", "--host", "0.0.0.0", "--port", "8765", "--no-browser"]
+    ports:
+      - "127.0.0.1:${ANALYZER_PORT:-8765}:8765"
+    restart: unless-stopped
